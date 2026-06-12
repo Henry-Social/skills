@@ -1,0 +1,10 @@
+{
+  "name": "henry",
+  "description": "Shop and build with Henry's agentic-commerce API: cross-merchant product search, universal carts, hosted checkout, and order tracking. Bundles the Henry MCP server plus /henry:integrate and /henry:shop skills.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Henry",
+    "email": "support@henrylabs.ai",
+    "url": "https://henrylabs.ai"
+  }
+}

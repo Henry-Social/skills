@@ -1,0 +1,25 @@
+{
+  "name": "henrylabs",
+  "metadata": {
+    "description": "Henry's agent plugin marketplace: agentic commerce (product search, universal carts, hosted checkout) for AI agents."
+  },
+  "owner": {
+    "name": "Henry",
+    "email": "support@henrylabs.ai"
+  },
+  "plugins": [
+    {
+      "name": "henry",
+      "source": "./",
+      "description": "Shop and build with Henry's agentic-commerce API: cross-merchant product search, universal carts, hosted checkout, and order tracking. Bundles the Henry MCP server plus /henry:integrate and /henry:shop skills.",
+      "author": {
+        "name": "Henry",
+        "email": "support@henrylabs.ai"
+      },
+      "homepage": "https://docs.henrylabs.ai",
+      "repository": "https://github.com/Henry-Social/skills",
+      "keywords": ["commerce", "shopping", "checkout", "cart", "mcp", "henry"],
+      "category": "commerce"
+    }
+  ]
+}
