@@ -1,4 +1,4 @@
-# Henry skills & Plugin
+# Henry - Skills & Plugin
 
 Henry's agent plugin: gives AI coding agents live commerce tools (product
 search, carts, hosted checkout) plus skills that teach them how to integrate
