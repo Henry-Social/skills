@@ -59,11 +59,15 @@ if (
 ) {
   fail("plugin.json needs a non-empty description");
 }
+// version is optional: when omitted, Claude Code keys plugin updates off the
+// git commit SHA, so every CI mirror sync reaches installed users. A pinned
+// value freezes updates until bumped — which is why we now leave it unset.
 if (
-  typeof manifest.version !== "string" ||
-  !/^\d+\.\d+\.\d+$/.test(manifest.version)
+  manifest.version !== undefined &&
+  (typeof manifest.version !== "string" ||
+    !/^\d+\.\d+\.\d+$/.test(manifest.version))
 ) {
-  fail("plugin.json version must be semver (x.y.z)");
+  fail("plugin.json version, when set, must be semver (x.y.z)");
 }
 
 // ─── Marketplace catalog ──────────────────────────────────────────────────────

@@ -18,6 +18,7 @@
       },
       "homepage": "https://docs.henrylabs.ai",
       "repository": "https://github.com/Henry-Social/skills",
+      "license": "Apache-2.0",
       "keywords": ["commerce", "shopping", "checkout", "cart", "mcp", "henry"],
       "category": "commerce"
     }
