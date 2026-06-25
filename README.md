@@ -1,14 +1,27 @@
-# Henry - Skills & Plugin
+# Henry skills, Claude Code, Codex & Cursor plugin
 
 Henry's agent plugin: gives AI coding agents live commerce tools (product
 search, carts, hosted checkout) plus skills that teach them how to integrate
-Henry into the apps they build.
+Henry into the apps they build. The one directory ships as a Claude Code
+plugin, a Codex plugin, a Cursor plugin, and bare cross-agent skills.
 
 ## What's inside
 
 - **`.mcp.json`** — auto-starts the Henry MCP server
-  (`npx -y @henrylabs/mcp@latest`) so installed agents get live commerce
-  tools.
+  (`npx -y @henrylabs/mcp@latest`) so installed Claude Code agents get live
+  commerce tools.
+- **`mcp.json`** — the same `mcpServers`-wrapped config under the dotless
+  filename Cursor auto-discovers (Claude reads `.mcp.json`). A byte-twin of
+  `.mcp.json`; the lint keeps them identical.
+- **`.mcp.codex.json`** — the same server in Codex's unwrapped-map format
+  (Codex reads the server name as the top-level key; Claude/Cursor wrap it
+  under `mcpServers`). The lint keeps it in sync too.
+- **`.codex-plugin/plugin.json`** — Codex plugin manifest; names the bundled
+  `skills/` and MCP config inline. Paired with
+  `.agents/plugins/marketplace.json` (Codex's marketplace location).
+- **`.cursor-plugin/plugin.json`** — Cursor plugin manifest (metadata only;
+  Cursor auto-discovers `skills/` and `mcp.json`). Paired with
+  `.cursor-plugin/marketplace.json` (Cursor's repo-root registry).
 - **`skills/integrate`** — model-invoked skill: triggers when a user asks to
   add commerce/checkout/product search to their app; teaches
   `@henrylabs/sdk` setup, async-job polling, hosted vs headless checkout,
@@ -16,7 +29,7 @@ Henry into the apps they build.
 - **`skills/shop`** — user-invoked demo: `/henry:shop white sneakers under
   $100` → real product search → cart → hosted checkout link.
 
-## Three ways to consume this directory
+## Five ways to consume this directory
 
 1. **Claude Code plugin** (full bundle: MCP wiring + namespaced skills).
    From the public mirror repo:
@@ -31,7 +44,21 @@ Henry into the apps they build.
    development in the monorepo: `claude --plugin-dir ./apps/skills`.
    Then `/henry:shop <query>` or just ask Claude to integrate Henry.
 
-2. **Cross-agent skills via the Agent Skills standard** — the same
+2. **Codex plugin** (full bundle: same `skills/` + MCP server, via
+   `.codex-plugin/plugin.json`). The marketplace entry lives at
+   `.agents/plugins/marketplace.json` and points at the public mirror, so a
+   Codex user adds it from there. Self-serve public publishing isn't open
+   yet — until it is, distribution is local
+   (`~/.codex/plugins/`) or **Codex app → Plugins → Created by you → Share
+   with workspace**.
+
+3. **Cursor plugin** (full bundle: same `skills/` + MCP server, via
+   `.cursor-plugin/plugin.json`; Cursor auto-discovers `skills/` and
+   `mcp.json`). The registry lives at `.cursor-plugin/marketplace.json`.
+   Publish by submitting the public mirror repo at
+   <https://cursor.com/marketplace/publish>.
+
+4. **Cross-agent skills via the Agent Skills standard** — the same
    `skills/*/SKILL.md` files work in Codex CLI, Cursor, ChatGPT's skills
    beta, and 30+ other agents:
 
@@ -42,7 +69,7 @@ Henry into the apps they build.
    Skills installed this way don't include the MCP wiring — the shop skill
    walks users through adding the Henry MCP server manually.
 
-3. **ChatGPT App** — a hosted in-chat app is a different artifact (remote
+5. **ChatGPT App** — a hosted in-chat app is a different artifact (remote
    MCP server + widgets). Henry's remote OAuth MCP server is the substrate
    it would build on; see <https://docs.henrylabs.ai>.
 

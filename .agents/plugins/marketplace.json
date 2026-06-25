@@ -1,0 +1,22 @@
+{
+  "name": "henrylabs",
+  "interface": {
+    "displayName": "Henry"
+  },
+  "plugins": [
+    {
+      "name": "henry",
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/Henry-Social/skills.git",
+        "path": "./",
+        "ref": "main"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_FIRST_USE"
+      },
+      "category": "commerce"
+    }
+  ]
+}

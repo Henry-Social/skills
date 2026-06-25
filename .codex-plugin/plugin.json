@@ -1,0 +1,28 @@
+{
+  "name": "henry",
+  "version": "0.1.0",
+  "description": "Shop and build with Henry's agentic-commerce API: cross-merchant product search, universal carts, hosted checkout, and order tracking. Bundles the Henry MCP server plus the integrate and shop skills.",
+  "author": {
+    "name": "Henry",
+    "email": "support@henrylabs.ai",
+    "url": "https://henrylabs.ai"
+  },
+  "homepage": "https://docs.henrylabs.ai",
+  "repository": "https://github.com/Henry-Social/skills",
+  "license": "Apache-2.0",
+  "keywords": ["commerce", "shopping", "checkout", "cart", "mcp", "henry"],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.codex.json",
+  "interface": {
+    "displayName": "Henry",
+    "shortDescription": "Agentic commerce: product search, carts, checkout",
+    "longDescription": "Henry gives agents live commerce tools — cross-merchant product search, universal carts, and hosted checkout — plus skills that teach agents to integrate Henry into the apps they build.",
+    "developerName": "Henry",
+    "category": "commerce",
+    "websiteURL": "https://henrylabs.ai",
+    "defaultPrompt": [
+      "Use Henry to find white sneakers under $100 and build a cart.",
+      "Use Henry to add product search and checkout to my app."
+    ]
+  }
+}
