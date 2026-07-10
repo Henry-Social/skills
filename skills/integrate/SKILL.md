@@ -99,8 +99,8 @@ Before implementing either mode, read
 
 ## Monetization
 
-Every completed order can generate a commission for the application:
-configure `commissionFeePercent` and/or `commissionFeeFixed` in the
+Every completed order can generate a service fee for the application:
+configure `serviceFeePercent` and/or `serviceFeeFixed` in the
 `settings` object of `cart.create`. Henry handles payout calculation and
 reporting.
 

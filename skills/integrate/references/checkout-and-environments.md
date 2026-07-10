@@ -86,7 +86,7 @@ while (order.status === "pending" || order.status === "processing") {
   order = await henry.cart.checkout.pollPurchase({ refId: purchase.refId });
 }
 if (order.status === "complete") {
-  const { subtotal, commissionFee, total } = order.result.costs;
+  const { subtotal, serviceFee, total } = order.result.costs;
 }
 ```
 
@@ -170,7 +170,7 @@ items-may-individually-fail nuance are in api-reference.md).
    no code change).
 2. Re-verify the webhook endpoint is registered for the production app and
    the secret is set in the production environment.
-3. Confirm commission settings (`commissionFeePercent` /
-   `commissionFeeFixed`) on cart creation are what you intend.
+3. Confirm service fee settings (`serviceFeePercent` /
+   `serviceFeeFixed`) on cart creation are what you intend.
 4. Run one real end-to-end order and confirm the webhook (or
    `orders.list`) reports `complete` with populated `result.costs`.

@@ -98,8 +98,8 @@ Cart settings (`cart.create` → `settings`):
 | `options.collectBuyerEmail` | `"off" \| "required" \| "optional"` | Email collection behavior |
 | `options.collectBuyerAddress` | `"off" \| "required" \| "optional"` | Address collection behavior |
 | `options.collectBuyerPhone` | `"off" \| "required" \| "optional"` | Phone collection behavior |
-| `commissionFeePercent` | `number` | Commission as % of order total (0–100) |
-| `commissionFeeFixed` | `{ value, currency }` | Fixed commission added to the order |
+| `serviceFeePercent` | `number` | Service fee as % of order total (0–100) |
+| `serviceFeeFixed` | `{ value, currency }` | Fixed service fee added to the order |
 | `events` | `CartEvent[]` | Lifecycle triggers (webhooks, points, tiers) — see checkout-and-environments.md |
 
 Item management: `cart.item.add` (returns the updated cart),
