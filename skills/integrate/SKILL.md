@@ -76,12 +76,17 @@ identifier (no separate product ID). `cart.create` returns a `checkoutUrl`
 immediately — hosted checkout needs no extra setup step.
 
 ```typescript
-const search = await henry.products.search({ query: "Nike Air Max", limit: 10 });
+const search = await henry.products.search({
+  type: "global",
+  filters: { type: "text", query: "Nike Air Max" },
+  limit: 10,
+});
 const done = await pollUntilDone(search, (a) => henry.products.pollSearch(a));
 const first = (done.result?.products ?? [])[0];
 
 const cart = await henry.cart.create({
-  items: [{ link: first.link, quantity: 1, variant: { size: "10" } }],
+  // selectedOptions: one value per option, from products.details `result.options`
+  items: [{ link: first.link, quantity: 1, selectedOptions: ["Black", "10"] }],
 });
 const { cartId, checkoutUrl } = cart.data;
 // Send the user to checkoutUrl — Henry handles payment, address, and tax.
@@ -112,8 +117,8 @@ reporting.
 - Building checkout UI, webhooks, or going to production? Read
   [references/checkout-and-environments.md](references/checkout-and-environments.md).
 - Full docs and live API playground: <https://docs.henrylabs.ai>. Henry also
-  offers an MCP server (`npx -y @henrylabs/mcp@latest`) and a remote
-  OAuth-based MCP server for end-user-facing assistants — see the docs site.
+  runs a hosted MCP server at `https://mcp.henrylabs.ai/mcp` (API key via
+  `x-api-key`, or OAuth sign-in) — see the docs site.
 
 ## Guardrails
 

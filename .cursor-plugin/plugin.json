@@ -1,6 +1,6 @@
 {
   "name": "henry",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Shop and build with Henry's agentic-commerce API: cross-merchant product search, universal carts, hosted checkout, and order tracking. Bundles the Henry MCP server plus the integrate and shop skills.",
   "author": {
     "name": "Henry",

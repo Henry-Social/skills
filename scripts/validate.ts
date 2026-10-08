@@ -141,18 +141,36 @@ if (
 }
 
 // ─── MCP server config ────────────────────────────────────────────────────────
+// Every client connects to Henry's hosted remote MCP server and authenticates
+// with the user's API key from HENRY_SDK_API_KEY. Each client spells the URL
+// and the env-var reference differently, so the three configs can't be
+// byte-twins; instead each is checked against the same URL and env var.
+
+const MCP_URL = "https://mcp.henrylabs.ai/mcp";
+const MCP_KEY_ENV = "HENRY_SDK_API_KEY";
+
+interface RemoteServer {
+  type?: unknown;
+  url?: unknown;
+  headers?: Record<string, unknown>;
+  bearer_token_env_var?: unknown;
+}
 
 const mcp = readJson(".mcp.json");
 const servers = Object.entries(
-  (mcp.mcpServers ?? {}) as Record<
-    string,
-    { command?: unknown; args?: unknown }
-  >,
+  (mcp.mcpServers ?? {}) as Record<string, RemoteServer>,
 );
 if (servers.length === 0) fail(".mcp.json defines no mcpServers");
 for (const [name, cfg] of servers) {
-  if (typeof cfg.command !== "string" || !Array.isArray(cfg.args)) {
-    fail(`.mcp.json server "${name}" needs a command string and args array`);
+  if (cfg.type !== "http" || cfg.url !== MCP_URL) {
+    fail(
+      `.mcp.json server "${name}" must be { "type": "http", "url": "${MCP_URL}" }`,
+    );
+  }
+  if (cfg.headers?.["x-api-key"] !== `\${${MCP_KEY_ENV}:-}`) {
+    fail(
+      `.mcp.json server "${name}" must send "x-api-key": "\${${MCP_KEY_ENV}:-}" (Claude Code env expansion; empty falls back to OAuth)`,
+    );
   }
 }
 
@@ -215,10 +233,10 @@ if (codex.mcpServers !== "./.mcp.codex.json") {
 }
 
 // ─── Codex MCP config ───────────────────────────────────────────────────────
-// Codex's .mcp.json is an unwrapped server map (server name → config), whereas
-// Claude wraps the same map under "mcpServers". The two files therefore can't be
-// shared — so we instead assert the Codex map carries the exact same server
-// definition as .mcp.json, failing the lint the moment they drift.
+// Codex's config is an unwrapped server map (server name → config), whereas
+// Claude wraps the same map under "mcpServers". Codex sends the key as
+// `Authorization: Bearer` via bearer_token_env_var, which the remote server
+// accepts for sk_ keys.
 
 const codexMcp = readJson(".mcp.codex.json");
 if ("mcpServers" in codexMcp || "mcp_servers" in codexMcp) {
@@ -226,21 +244,21 @@ if ("mcpServers" in codexMcp || "mcp_servers" in codexMcp) {
     ".mcp.codex.json must be an unwrapped server map (no mcpServers/mcp_servers key) — Codex reads the server name as the top-level key",
   );
 }
-const claudeServers = (mcp.mcpServers ?? {}) as Record<string, unknown>;
+const claudeServerNames = servers.map(([name]) => name);
 const codexServerNames = Object.keys(codexMcp);
-const claudeServerNames = Object.keys(claudeServers);
 if (
-  canonical(codexServerNames.sort()) !==
+  canonical([...codexServerNames].sort()) !==
   canonical([...claudeServerNames].sort())
 ) {
   fail(
-    ".mcp.codex.json must define the same servers as .mcp.json (keep the two MCP configs in sync)",
+    ".mcp.codex.json must define the same servers as .mcp.json (keep the MCP configs in sync)",
   );
 }
 for (const name of codexServerNames) {
-  if (canonical(codexMcp[name]) !== canonical(claudeServers[name])) {
+  const cfg = codexMcp[name] as RemoteServer;
+  if (cfg.url !== MCP_URL || cfg.bearer_token_env_var !== MCP_KEY_ENV) {
     fail(
-      `.mcp.codex.json server "${name}" has drifted from .mcp.json — the command, args, and env must match`,
+      `.mcp.codex.json server "${name}" must be { "url": "${MCP_URL}", "bearer_token_env_var": "${MCP_KEY_ENV}" }`,
     );
   }
 }
@@ -305,15 +323,30 @@ if (
 }
 
 // ─── Cursor MCP config ──────────────────────────────────────────────────────
-// Cursor uses the same "mcpServers"-wrapped shape as Claude, but auto-discovers
-// the dotless "mcp.json" filename (Claude reads ".mcp.json"). The two files are
-// therefore byte-twins — assert they stay identical so they can't drift.
+// Cursor uses the same "mcpServers"-wrapped shape as Claude under the dotless
+// "mcp.json" filename it auto-discovers, but its env interpolation is
+// `${env:NAME}` rather than Claude's `${NAME}`.
 
 const cursorMcp = readJson("mcp.json");
-if (canonical(cursorMcp) !== canonical(mcp)) {
-  fail(
-    "mcp.json (Cursor) must stay identical to .mcp.json (Claude) — same mcpServers wrapper, just a different filename Cursor auto-discovers",
-  );
+const cursorServers = (cursorMcp.mcpServers ?? {}) as Record<
+  string,
+  RemoteServer
+>;
+if (
+  canonical(Object.keys(cursorServers).sort()) !==
+  canonical([...claudeServerNames].sort())
+) {
+  fail("mcp.json (Cursor) must define the same servers as .mcp.json (Claude)");
+}
+for (const [name, cfg] of Object.entries(cursorServers)) {
+  if (
+    cfg.url !== MCP_URL ||
+    cfg.headers?.["x-api-key"] !== `\${env:${MCP_KEY_ENV}}`
+  ) {
+    fail(
+      `mcp.json server "${name}" must be { "url": "${MCP_URL}", "headers": { "x-api-key": "\${env:${MCP_KEY_ENV}}" } }`,
+    );
+  }
 }
 
 // ─── Cursor marketplace catalog ─────────────────────────────────────────────

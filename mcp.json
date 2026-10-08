@@ -1,11 +1,9 @@
 {
   "mcpServers": {
     "henry": {
-      "command": "npx",
-      "args": ["-y", "@henrylabs/mcp@latest", "--tag=hosted"],
-      "env": {
-        "HENRY_SDK_API_KEY": "${HENRY_SDK_API_KEY:-}",
-        "HENRY_SDK_ENVIRONMENT": "${HENRY_SDK_ENVIRONMENT:-sandbox}"
+      "url": "https://mcp.henrylabs.ai/mcp",
+      "headers": {
+        "x-api-key": "${env:HENRY_SDK_API_KEY}"
       }
     }
   }

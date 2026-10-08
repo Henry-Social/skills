@@ -54,8 +54,7 @@ the client SDK docs at <https://docs.henrylabs.ai>); pass the resulting
 `cardToken` to the purchase call. Raw card numbers never touch your server.
 
 ```typescript
-const purchase = await henry.cart.checkout.purchase({
-  cartId,
+const purchase = await henry.cart.checkout.purchase(cartId, {
   buyer: {
     name: { firstName: "Jane", lastName: "Doe" },
     email: "jane@example.com",
@@ -85,14 +84,17 @@ while (order.status === "pending" || order.status === "processing") {
   await new Promise((r) => setTimeout(r, 2000));
   order = await henry.cart.checkout.pollPurchase({ refId: purchase.refId });
 }
-if (order.status === "complete") {
+// Settles as "complete" (every item bought), "partially_complete" (some —
+// check products[].status) or "failed" (nothing bought — see order.error).
+if (order.status === "complete" || order.status === "partially_complete") {
   const { subtotal, serviceFee, total } = order.result.costs;
 }
 ```
 
 Adjust quantities at purchase time without mutating the cart via
-`overrideProducts`: a map of product `link` → new quantity, or `null` to
-exclude the item from this purchase.
+`overrideProducts`: a map of product `link` →
+`{ quantity?: number | null, selectedShipping?: { id?, value? } }`. A
+`quantity` of `null` (or `0`) excludes the item from this purchase.
 
 ## Order tracking: webhooks first, polling as fallback
 
@@ -109,7 +111,7 @@ const cart = await henry.cart.create({
   settings: {
     events: [
       {
-        type: "order.purchase.full.complete",
+        type: "order.purchase.complete",
         data: [{ type: "send_webhook", webhookUUID: "<your-webhook-uuid>" }],
       },
     ],
@@ -118,9 +120,10 @@ const cart = await henry.cart.create({
 ```
 
 Useful event types (the full list is in the Universal Cart guide): `order.purchase`
-(any purchase update), `order.purchase.complete`, `order.purchase.cancelled`,
-`order.purchase.full.complete` (all items placed), `order.item.failed`
-(item-level failures). Actions besides `send_webhook` include `send_email`
+(any purchase update), and exactly one of `order.purchase.complete` (every
+item bought), `order.purchase.partially_complete` (some bought) or
+`order.purchase.failed` (nothing bought) once the purchase settles;
+`order.item.failed` for item-level failures. Actions besides `send_webhook` include `send_email`
 and points/tier actions for loyalty programs.
 
 Verify every delivery. Henry sends `X-Henry-Signature` (HMAC-SHA256 hex of
@@ -144,12 +147,13 @@ function verifyHenryWebhook(rawBody, signature, timestamp) {
 }
 ```
 
-Handle the payload `{ event, data }` — e.g. `order.purchase.full.complete`
+Handle the payload `{ event, data }` — e.g. `order.purchase.complete`
 carries `data.refId` and `data.result.costs`.
 
 **Polling fallback**: `orders.list({ cartId })` on an interval until the
-order reaches `complete` or `cancelled` (statuses and the
-items-may-individually-fail nuance are in api-reference.md).
+order reaches a terminal status — `complete`, `partially_complete`, `failed`
+or `cancelled` (statuses and the items-may-individually-fail nuance are in
+api-reference.md).
 
 ## Sandbox vs production
 

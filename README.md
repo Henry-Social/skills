@@ -7,15 +7,15 @@ plugin, a Codex plugin, a Cursor plugin, and bare cross-agent skills.
 
 ## What's inside
 
-- **`.mcp.json`** — auto-starts the Henry MCP server
-  (`npx -y @henrylabs/mcp@latest`) so installed Claude Code agents get live
-  commerce tools.
-- **`mcp.json`** — the same `mcpServers`-wrapped config under the dotless
-  filename Cursor auto-discovers (Claude reads `.mcp.json`). A byte-twin of
-  `.mcp.json`; the lint keeps them identical.
-- **`.mcp.codex.json`** — the same server in Codex's unwrapped-map format
-  (Codex reads the server name as the top-level key; Claude/Cursor wrap it
-  under `mcpServers`). The lint keeps it in sync too.
+- **`.mcp.json`** — connects installed Claude Code agents to Henry's hosted
+  MCP server (`https://mcp.henrylabs.ai/mcp`), sending `HENRY_SDK_API_KEY`
+  as the `x-api-key` header, for live commerce tools.
+- **`mcp.json`** — the same server under the dotless filename Cursor
+  auto-discovers (Claude reads `.mcp.json`), using Cursor's `${env:NAME}`
+  interpolation.
+- **`.mcp.codex.json`** — the same server in Codex's unwrapped-map format,
+  sending the key as `Authorization: Bearer` via `bearer_token_env_var`. The
+  lint checks all three point at the same URL and env var.
 - **`.codex-plugin/plugin.json`** — Codex plugin manifest; names the bundled
   `skills/` and MCP config inline. Paired with
   `.agents/plugins/marketplace.json` (Codex's marketplace location).
@@ -41,7 +41,7 @@ plugin, a Codex plugin, a Cursor plugin, and bare cross-agent skills.
 
    This directory is also its own marketplace
    (`.claude-plugin/marketplace.json` beside `plugin.json`). For local
-   development in the monorepo: `claude --plugin-dir ./apps/skills`.
+   development in the monorepo: `claude --plugin-dir ./apps/public-skills`.
    Then `/henry:shop <query>` or just ask Claude to integrate Henry.
 
 2. **Codex plugin** (full bundle: same `skills/` + MCP server, via
@@ -67,32 +67,27 @@ plugin, a Codex plugin, a Cursor plugin, and bare cross-agent skills.
    ```
 
    Skills installed this way don't include the MCP wiring — the shop skill
-   walks users through adding the Henry MCP server manually.
+   walks users through adding the hosted Henry MCP server manually.
 
-5. **ChatGPT App** — a hosted in-chat app is a different artifact (remote
-   MCP server + widgets). Henry's remote OAuth MCP server is the substrate
-   it would build on; see <https://docs.henrylabs.ai>.
+5. **ChatGPT App** — a hosted in-chat app is a different artifact: it
+   connects to the remote server's `/mcp/apps` endpoint with OAuth; see
+   <https://docs.henrylabs.ai>.
 
 This directory is developed in the (private) henry monorepo and mirrored to
 the public [Henry-Social/skills](https://github.com/Henry-Social/skills)
-repo by CI on every change to `dev`. Don't edit the mirror directly —
+repo by CI on every change to `main`. Don't edit the mirror directly —
 changes there are overwritten by the next sync. Found a problem? Open an
 issue on Henry-Social/skills or email support@henrylabs.ai; pull requests
 against the mirror are clobbered by the next sync.
 
 ## Requirements
 
-- Node.js 18+ with `npx` on the PATH (the MCP server runs via npx).
 - A Henry API key: create an app at <https://app.henrylabs.ai> → Developer
   settings. Start with a sandbox key.
 - `export HENRY_SDK_API_KEY="<key>"` in the shell that launches the agent.
-  Without it the MCP server still starts; tool calls fail with 401 and the
-  shop skill walks the user through onboarding.
-
-Privacy note: the published MCP server is a Stainless "Code Mode" build
-whose code-execution tool runs on Stainless-hosted sandboxes by default.
-Pass `--code-execution-mode=local` in `.mcp.json` args to keep execution
-on-machine.
+  Without it, Claude Code and Cursor fall back to the server's OAuth sign-in;
+  if that isn't completed, the Henry tools are missing and the shop skill
+  walks the user through onboarding.
 
 ## Development
 
@@ -110,9 +105,9 @@ claude --plugin-dir .
 ```
 
 From the henry monorepo root the same commands are
-`bun run --filter @henry/skills lint`,
-`claude plugin validate ./apps/skills`, and
-`claude --plugin-dir ./apps/skills`.
+`bun run --filter @henry/public-skills lint`,
+`claude plugin validate ./apps/public-skills`, and
+`claude --plugin-dir ./apps/public-skills`.
 
 Skill content is distilled from <https://docs.henrylabs.ai> and Henry's v1
 OpenAPI spec (which lives in the private henry monorepo, not in this repo —
