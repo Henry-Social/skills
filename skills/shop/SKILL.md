@@ -85,7 +85,9 @@ not null, search again with `cursor: nextCursor`.
 
 ## Step 3 — Present results
 
-Show a compact markdown table, max 8 rows:
+If Henry's widgets render in this client (product cards appear under the
+tool call), don't repeat them: no table, no prices, no links. Just ask which
+item to add. Otherwise, show a compact markdown table, max 8 rows:
 
 | # | Product | Price | Merchant | In stock |
 |---|---------|-------|----------|----------|
@@ -118,7 +120,9 @@ card details in chat — Henry's hosted checkout page handles that.
 
 ## Step 7 — Present the result
 
-Short summary table of cart contents with line prices, then the checkout URL
+With widgets, the cart and checkout widgets already show items, totals, and
+the way to pay: say what's next in a sentence, with no URL. Otherwise, a short
+summary table of cart contents with line prices, then the checkout URL
 prominently on its own line:
 
 > **Checkout here:** <checkout URL>
