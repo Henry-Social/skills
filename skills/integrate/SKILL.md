@@ -15,9 +15,9 @@ description: >-
 
 Henry gives an application a full commerce stack behind a single API key:
 search any merchant's catalog, build multi-merchant carts, launch checkout,
-and track orders. Features are modular — you can call
-`cart.checkout.purchase` directly with a product link, or use
-`products.details` standalone without ever touching a cart.
+and track orders. Features are modular — a cart can hold a single product
+link for a one-item purchase (`cart.checkout.purchase` always takes a cart),
+or use `products.details` standalone without ever touching a cart.
 
 ## Setup in three steps
 

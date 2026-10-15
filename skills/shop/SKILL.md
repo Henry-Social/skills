@@ -143,6 +143,7 @@ filtered by `cartId`. Report the order status progression
 |---------|--------|
 | Henry tools absent | Run the Step 1 server setup, then stop |
 | 401 / authentication error | Run the Step 1 key onboarding, then stop |
+| 403 naming a merchant's coverage | Say Henry doesn't fully support that merchant yet and offer `supported` alternatives; don't retry |
 | Job `status: "failed"` | Surface the job's `error`, retry once, then suggest rephrasing |
 | Poll exceeds ~60s | Say it's still processing; offer to keep waiting |
 | Empty results | Suggest broadening the query or dropping filters |

@@ -243,6 +243,7 @@ async function pollUntilDone<T extends { status: string; refId: string }>(
 | `401 Unauthorized` | Invalid API key | Check `HENRY_SDK_API_KEY` |
 | `400 Bad Request` | Missing/invalid params (e.g. no `query`, bad `link` URL, out-of-range `limit`) | Validate input before calling |
 | `404 Not Found` | `cartId` doesn't exist or belongs to a different app | Re-create or re-fetch the cart |
+| `403 Forbidden` | The app has experimental merchants off and the merchant isn't `supported` for this call. The payload names the merchant, capability and coverage | Use a `supported` merchant (`filters.supportedOnly`, or the coverage filters on `merchants.list`), or turn the switch on in Settings → App → General → Merchant coverage |
 | Job `status: "failed"` | Background job error | Log the job's `error` field and retry |
 
 The SDK throws typed `APIError` subclasses, automatically retries
